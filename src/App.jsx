@@ -4,6 +4,7 @@ import Dashboard from "./component/Dashboard";
 import Login from "./component/Login";
 const App = () => {
 	const setToken = (userToken) => {
+		console.log(userToken);
 		sessionStorage.setItem("token", JSON.stringify(userToken));
 		// navigate("/dashboard");
 	};

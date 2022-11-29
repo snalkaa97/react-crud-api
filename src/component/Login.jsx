@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { Link } from 'react-router-dom'
+import apiClient from '../services/api'
 
 // import axios from 'axios';
 export default function Login({ setToken }) {
@@ -14,20 +14,20 @@ export default function Login({ setToken }) {
 		setData({ ...data, [e.target.name]: e.target.value });
 	};
 	async function loginUser(credentials) {
-		return fetch("http://127.0.0.1:8000/api/login", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(credentials),
-		}).then((data) => data.json()
-		);
+		await apiClient.get('/sanctum/csrf-cookie').then(response => {
+			// Login...
+			return apiClient.post('/api/login',credentials)
+			.then((data) => {
+				const token = data.data;
+				console.log(token);
+				setRefresh(true);
+				setToken(token);
+			})
+		});
 	}
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const token = await loginUser(data);
-		setRefresh(true);
-		setToken(token);
+		loginUser(data);
 	};
 	return (
 		<div className="md:container m-5">
