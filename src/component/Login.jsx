@@ -1,9 +1,8 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import apiClient from '../services/api'
 
 // import axios from 'axios';
-export default function Login({ setToken }) {
+export default function Login(props) {
 	const initialState = {
 		email: "",
 		password: "",
@@ -18,10 +17,11 @@ export default function Login({ setToken }) {
 			// Login...
 			return apiClient.post('/api/login',credentials)
 			.then((data) => {
-				const token = data.data;
-				console.log(token);
-				setRefresh(true);
-				setToken(token);
+				console.log(data);
+				if(data.status===200){
+					props.login(data.data);
+					setRefresh(true);
+				}
 			})
 		});
 	}
@@ -91,6 +91,3 @@ export default function Login({ setToken }) {
 		</div>
 	);
 }
-Login.propTypes = {
-	setToken: PropTypes.func.isRequired,
-};

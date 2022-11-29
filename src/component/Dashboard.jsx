@@ -26,7 +26,6 @@ export default function Dashboard() {
 	const [editing, setEditing] = useState(false);
 	const [currentUser, SetUser] = useState("");
 	const addUser = (user) => {
-		console.log(users);
 		apiClient.post(`/api/pegawai`,user,{
 			headers:{
 				"Authorization": `Bearer ${getToken()}`
@@ -34,7 +33,6 @@ export default function Dashboard() {
 		})
 		.then((response)=>{
 			if(response.data.status === "success"){
-				console.log(response.data.data);
 				setUsers([...users, response.data.data])
 			}
 		})
@@ -72,7 +70,6 @@ export default function Dashboard() {
 		})
 	};
 	useEffect(() => {
-		console.log(users.data);
 	}, [users]);
 	return (
 		<div>
