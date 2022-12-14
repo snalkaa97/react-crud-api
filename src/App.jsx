@@ -4,14 +4,17 @@ import Dashboard from "./component/Dashboard";
 import Login from "./component/Login";
 import { useState, useEffect } from "react";
 import apiClient from "./services/api";
+import store from "./redux/store";
+import { Provider } from 'react-redux';
+
 
 const App = () => {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [token, setToken] = useState();
 	useEffect(() =>{
-		if(sessionStorage.getItem('loggedIn')===true){
-			setLoggedIn(true);
+		if(sessionStorage.getItem('loggedIn')==='true'){
 			setToken(JSON.parse(sessionStorage.getItem('token'))?.access_token);
+			setLoggedIn(true);
 		} else {
 			setLoggedIn(false);
 			setToken();
@@ -33,7 +36,7 @@ const App = () => {
 			}
 		})
 		.then((response)=>{
-			if(response.status==200){
+			if(response.status===200){
 				sessionStorage.removeItem("token");
 				sessionStorage.setItem("loggedIn", false);
 				setToken('');
@@ -45,19 +48,22 @@ const App = () => {
 	const authLink = loggedIn ? <button onClick={logout}>Logout</button> : '';
 
 	useEffect(()=>{
+		console.log(loggedIn);
 	},[loggedIn, token]);
 
 	if (!loggedIn) {
 		return <Login login={login} />;
 	} else{
 		return (
-			<Router>
-				{authLink}
-				<Routes>
-					<Route path="/dashboard" element={<Dashboard />} />
-					<Route path="/" element={<Dashboard />} />
-				</Routes>
-			</Router>
+			<Provider store={store}>
+				<Router>
+					{authLink}
+					<Routes>
+						<Route path="/dashboard" element={<Dashboard />} />
+						<Route path="/" element={<Dashboard />} />
+					</Routes>
+				</Router>
+			</Provider>
 		);
 
 	}

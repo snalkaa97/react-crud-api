@@ -3,14 +3,16 @@ import UserTable from "./UserTable";
 import EditUserForm from "./EditUserForm";
 import { useState, useEffect } from "react";
 import apiClient from '../services/api'
+import {useDispatch, useSelector} from 'react-redux';
+import {getAllUser, addUser as addNewUser, updateUser as updateOldUser, deleteUser as deleteOldUser} from './../redux/reducers/user';
+
+
 export default function Dashboard() {
-	const [users, setUsers] = useState([]);
-	// const [users, setUsers] = useState();
-	const getToken = () => {
-		const tokenString = sessionStorage.getItem("token");
-		const userToken = JSON.parse(tokenString);
-		return userToken?.access_token;
-	};
+
+	// const [users, setUsers] = useState([]);
+	const dispatch = useDispatch();
+
+	
 	useEffect(() => {
 		(async ()=>{
 			await apiClient.get(`/api/pegawai`,{
@@ -19,10 +21,20 @@ export default function Dashboard() {
 				}
 			})
 			.then((response)=>{
-				setUsers(response.data.data);
+				dispatch(getAllUser(response.data.data));
+				// setUsers(response.data.data);
 			})
 		})();
 	},[])
+	
+	const userss = useSelector((state) => state.users);
+	// const [users, setUsers] = useState();
+	const getToken = () => {
+		const tokenString = sessionStorage.getItem("token");
+		const userToken = JSON.parse(tokenString);
+		return userToken?.access_token;
+	};
+
 	const [editing, setEditing] = useState(false);
 	const [currentUser, SetUser] = useState("");
 	const addUser = (user) => {
@@ -33,7 +45,8 @@ export default function Dashboard() {
 		})
 		.then((response)=>{
 			if(response.data.status === "success"){
-				setUsers([...users, response.data.data])
+				// setUsers([...users, response.data.data])
+				dispatch(addNewUser(response.data.data))
 			}
 		})
 		// setUsers([...users, user]);
@@ -50,9 +63,10 @@ export default function Dashboard() {
 		})
 		.then((response)=>{
 			if(response.data.status==="success"){
-				setUsers(
-					users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-				);
+				dispatch(updateOldUser(updatedUser));
+				// setUsers(
+				// 	users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+				// );
 			}
 		})
 		setEditing(false);
@@ -65,12 +79,13 @@ export default function Dashboard() {
 		})
 		.then((response)=>{
 			if(response.data.status==="success"){
-				setUsers(users.filter((user) => user.id !== id));
+				dispatch(deleteOldUser(id));
+				// setUsers(users.filter((user) => user.id !== id));
 			}
 		})
 	};
 	useEffect(() => {
-	}, [users]);
+	}, [userss]);
 	return (
 		<div>
 			<nav className="bg-gray-800 p-10">
@@ -93,7 +108,7 @@ export default function Dashboard() {
 					)}
 
 					<UserTable
-						users={users}
+						users={userss}
 						setRow={setRow}
 						currentUser={currentUser}
 						editing={setEditing}
