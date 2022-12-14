@@ -9,7 +9,7 @@ import {getAllUser, addUser as addNewUser, updateUser as updateOldUser, deleteUs
 
 export default function Dashboard() {
 
-	const [users, setUsers] = useState([]);
+	// const [users, setUsers] = useState([]);
 	const dispatch = useDispatch();
 
 	
